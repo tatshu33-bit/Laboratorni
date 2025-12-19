@@ -112,8 +112,8 @@ def item(item_id):
     
     elif request.method == 'PUT':
         data = request.get_json()
-        if not data:
-            return jsonify({'error': 'No data provided'}), 400
+        if not data or 'name' not in data:
+            return jsonify({'error': 'Name is required'}), 400
         
         cursor = db.execute('SELECT * FROM items WHERE id = ?', (item_id,))
         if cursor.fetchone() is None:
@@ -121,7 +121,7 @@ def item(item_id):
         
         db.execute(
             'UPDATE items SET name = ?, description = ? WHERE id = ?',
-            (data.get('name'), data.get('description', ''), item_id)
+            (data['name'], data.get('description', ''), item_id)
         )
         db.commit()
         
