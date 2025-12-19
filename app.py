@@ -301,11 +301,27 @@ def create_item():
                 "status": 400
             }), 400
     
+    # Validate quantity is a non-negative integer
+    try:
+        quantity = int(request.json['quantity'])
+        if quantity < 0:
+            return jsonify({
+                "error": "Bad Request",
+                "message": "Quantity must be a non-negative integer",
+                "status": 400
+            }), 400
+    except (ValueError, TypeError):
+        return jsonify({
+            "error": "Bad Request",
+            "message": "Quantity must be a valid integer",
+            "status": 400
+        }), 400
+    
     new_item = {
         "id": next_id,
         "name": request.json['name'],
         "category": request.json['category'],
-        "quantity": request.json['quantity'],
+        "quantity": quantity,
         "created_at": datetime.now().isoformat()
     }
     
@@ -380,7 +396,22 @@ def update_item(item_id):
     if 'category' in request.json:
         item['category'] = request.json['category']
     if 'quantity' in request.json:
-        item['quantity'] = request.json['quantity']
+        # Validate quantity is a non-negative integer
+        try:
+            quantity = int(request.json['quantity'])
+            if quantity < 0:
+                return jsonify({
+                    "error": "Bad Request",
+                    "message": "Quantity must be a non-negative integer",
+                    "status": 400
+                }), 400
+            item['quantity'] = quantity
+        except (ValueError, TypeError):
+            return jsonify({
+                "error": "Bad Request",
+                "message": "Quantity must be a valid integer",
+                "status": 400
+            }), 400
     
     return jsonify({
         "message": "Item updated successfully",
