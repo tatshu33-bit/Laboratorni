@@ -5,9 +5,32 @@ from datetime import datetime
 import database as db
 from flasgger import Swagger, swag_from
 import validation as val
+import logging
+from logging.handlers import RotatingFileHandler
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
+
+# Configuration from environment variables
+app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
+app.config['SESSION_COOKIE_HTTPONLY'] = os.environ.get('SESSION_COOKIE_HTTPONLY', 'True') == 'True'
+app.config['SESSION_COOKIE_SAMESITE'] = os.environ.get('SESSION_COOKIE_SAMESITE', 'Lax')
+
+# Setup logging
+if not app.debug:
+    log_dir = os.path.dirname(os.environ.get('LOG_FILE', 'app.log'))
+    if log_dir and not os.path.exists(log_dir):
+        os.makedirs(log_dir, exist_ok=True)
+    
+    log_file = os.environ.get('LOG_FILE', 'app.log')
+    handler = RotatingFileHandler(log_file, maxBytes=10000000, backupCount=3)
+    handler.setLevel(getattr(logging, os.environ.get('LOG_LEVEL', 'INFO')))
+    formatter = logging.Formatter(
+        '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+    )
+    handler.setFormatter(formatter)
+    app.logger.addHandler(handler)
+    app.logger.setLevel(getattr(logging, os.environ.get('LOG_LEVEL', 'INFO')))
+    app.logger.info('Laboratorni application startup')
 
 # Configure Swagger/OpenAPI documentation for REST API
 swagger_config = {
@@ -46,9 +69,9 @@ swagger = Swagger(app, config=swagger_config, template=swagger_template)
 db.init_db()
 db.seed_initial_data()
 
-# Admin credentials (in production, use proper authentication)
-ADMIN_USERNAME = 'admin'
-ADMIN_PASSWORD = 'admin123'
+# Admin credentials (use environment variables in production)
+ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'admin')
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin123')
 
 
 def admin_required(f):
@@ -292,6 +315,9 @@ def place_order():
         # Create order
         order_id = db.create_order(client_id, order_items)
         
+        # Log successful order creation
+        app.logger.info(f'Order created: order_id={order_id}, client_id={client_id}, total_items={len(order_items)}')
+        
         # Clear cart
         session.pop('cart', None)
         
@@ -300,6 +326,7 @@ def place_order():
         return redirect(url_for('order_confirmation', order_id=order_id))
         
     except Exception as e:
+        app.logger.error(f'Error creating order: {str(e)}')
         flash('Помилка при оформленні замовлення. Спробуйте ще раз.', 'error')
         return redirect(url_for('checkout'))
 
@@ -444,9 +471,11 @@ def admin_login():
         
         if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
             session['is_admin'] = True
+            app.logger.info(f'Admin login successful: username={username}')
             flash('Ви успішно увійшли як адміністратор', 'success')
             return redirect(url_for('admin_dashboard'))
         else:
+            app.logger.warning(f'Failed admin login attempt: username={username}')
             flash('Невірне ім\'я користувача або пароль', 'error')
     
     return render_template('admin/login.html')
