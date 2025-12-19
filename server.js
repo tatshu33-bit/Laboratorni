@@ -17,7 +17,7 @@ let resources = [
   { id: 3, name: 'Express Guide', description: 'Building web apps with Express', url: 'https://expressjs.com/guide' }
 ];
 
-let nextId = 4;
+let nextId = 4; // Note: For production, use a more robust ID generation strategy (e.g., UUID)
 
 // API Routes
 
@@ -30,8 +30,8 @@ app.get('/api/resources', (req, res) => {
 app.post('/api/resources', (req, res) => {
   const { name, description, url } = req.body;
 
-  // Validation
-  if (!name || !description || !url) {
+  // Validation - check for truthy values and non-empty after trimming
+  if (!name || !description || !url || !name.trim() || !description.trim() || !url.trim()) {
     return res.status(400).json({ 
       success: false, 
       message: 'Please provide name, description, and url' 

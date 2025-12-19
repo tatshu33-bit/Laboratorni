@@ -69,7 +69,7 @@ function createResourceCard(resource) {
     card.className = 'resource-card';
     
     card.innerHTML = `
-        <span class="resource-id">ID: ${resource.id}</span>
+        <span class="resource-id">ID: ${escapeHtml(String(resource.id))}</span>
         <h3>${escapeHtml(resource.name)}</h3>
         <p>${escapeHtml(resource.description)}</p>
         <a href="${escapeHtml(resource.url)}" target="_blank" rel="noopener noreferrer">
