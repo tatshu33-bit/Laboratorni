@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
 
-            if (!isValid && form.classList.contains('contact-form') || form.classList.contains('review-form')) {
+            if (!isValid && (form.classList.contains('contact-form') || form.classList.contains('review-form'))) {
                 e.preventDefault();
                 alert('Будь ласка, заповніть всі обов\'язкові поля');
             }

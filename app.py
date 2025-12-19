@@ -24,7 +24,7 @@ PRODUCTS = [
     },
     {
         'id': 3,
-        'name': 'Светр в`язаний',
+        'name': 'Светр в\'язаний',
         'category': 'Светри',
         'price': 1099.00,
         'image': 'sweater1.jpg',
