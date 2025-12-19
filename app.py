@@ -465,4 +465,8 @@ def delete_item(item_id):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Note: Debug mode is enabled for development only
+    # For production deployment, set debug=False and use a production WSGI server
+    import os
+    debug_mode = os.environ.get('FLASK_DEBUG', 'True').lower() == 'true'
+    app.run(debug=debug_mode, host='0.0.0.0', port=5000)

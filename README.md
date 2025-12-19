@@ -59,6 +59,14 @@ python app.py
 
 The API will be available at: `http://localhost:5000`
 
+**Security Note:** By default, the API runs in debug mode for development. To run in production mode, set the environment variable:
+```bash
+export FLASK_DEBUG=False
+python app.py
+```
+
+For production deployments, use a production WSGI server like Gunicorn or uWSGI instead of the Flask development server.
+
 ## API Documentation
 
 Once the server is running, access the interactive Swagger documentation at:
