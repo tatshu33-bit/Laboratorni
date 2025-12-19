@@ -77,9 +77,42 @@ def about():
 
 @app.route('/catalog')
 def catalog():
-    """Сторінка каталогу товарів"""
+    """Сторінка каталогу товарів з пошуком та фільтрацією"""
+    search_query = request.args.get('search', '').strip()
+    category_filter = request.args.get('category', '').strip()
+    min_price = request.args.get('min_price', type=float)
+    max_price = request.args.get('max_price', type=float)
+    
+    # Get all products
     products = db.get_all_products()
-    return render_template('catalog.html', products=products)
+    
+    # Apply search filter
+    if search_query:
+        products = [p for p in products if 
+                   search_query.lower() in p['name'].lower() or 
+                   search_query.lower() in p['description'].lower()]
+    
+    # Apply category filter
+    if category_filter:
+        products = [p for p in products if p['category'] == category_filter]
+    
+    # Apply price filters
+    if min_price is not None:
+        products = [p for p in products if p['price'] >= min_price]
+    if max_price is not None:
+        products = [p for p in products if p['price'] <= max_price]
+    
+    # Get all unique categories for filter dropdown
+    all_products = db.get_all_products()
+    categories = sorted(set(p['category'] for p in all_products))
+    
+    return render_template('catalog.html', 
+                          products=products, 
+                          categories=categories,
+                          search_query=search_query,
+                          category_filter=category_filter,
+                          min_price=min_price,
+                          max_price=max_price)
 
 
 @app.route('/cart')
@@ -303,6 +336,39 @@ def contacts():
 def delivery():
     """Сторінка інформації про доставку"""
     return render_template('delivery.html')
+
+
+@app.route('/track_order', methods=['GET', 'POST'])
+def track_order():
+    """Сторінка відстеження замовлень"""
+    orders = None
+    email = None
+    
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip()
+        
+        if not email:
+            flash('Будь ласка, введіть email адресу', 'error')
+        else:
+            orders = db.get_orders_by_email(email)
+            if not orders:
+                flash('Замовлення за цією email адресою не знайдено', 'info')
+    
+    return render_template('track_order.html', orders=orders, email=email)
+
+
+@app.route('/order_details/<int:order_id>')
+def order_details(order_id):
+    """Деталі конкретного замовлення"""
+    order = db.get_order_by_id(order_id)
+    
+    if not order:
+        flash('Замовлення не знайдено', 'error')
+        return redirect(url_for('track_order'))
+    
+    order_items = db.get_order_items(order_id)
+    
+    return render_template('order_details.html', order=order, order_items=order_items)
 
 
 # Admin Panel Routes

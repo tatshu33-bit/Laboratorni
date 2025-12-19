@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Відстеження замовлень - Магазин одягу{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="page-header">
+        <h1>Відстеження замовлень</h1>
+        <p>Введіть вашу email адресу для перегляду замовлень</p>
+    </section>
+
+    <div class="track-order-form">
+        <form method="POST" action="{{ url_for('track_order') }}">
+            <div class="form-group">
+                <label for="email">Email адреса</label>
+                <input type="email" 
+                       id="email" 
+                       name="email" 
+                       placeholder="your@email.com"
+                       value="{{ email or '' }}"
+                       required
+                       class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary">Знайти замовлення</button>
+        </form>
+    </div>
+
+    {% if orders is not none %}
+        {% if orders %}
+        <section class="orders-section">
+            <h2>Ваші замовлення</h2>
+            <div class="orders-list">
+                {% for order in orders %}
+                <div class="order-card">
+                    <div class="order-header">
+                        <div class="order-id">
+                            <strong>Замовлення #{{ order.id }}</strong>
+                        </div>
+                        <div class="order-status status-{{ order.status }}">
+                            {% if order.status == 'pending' %}
+                                Очікується
+                            {% elif order.status == 'processing' %}
+                                Обробляється
+                            {% elif order.status == 'shipped' %}
+                                Відправлено
+                            {% elif order.status == 'delivered' %}
+                                Доставлено
+                            {% elif order.status == 'cancelled' %}
+                                Скасовано
+                            {% else %}
+                                {{ order.status }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="order-info">
+                        <p><strong>Дата:</strong> {{ order.created_at }}</p>
+                        <p><strong>Сума:</strong> {{ "%.2f"|format(order.total_amount) }} грн</p>
+                        <p><strong>Клієнт:</strong> {{ order.client_name }}</p>
+                    </div>
+                    <div class="order-actions">
+                        <a href="{{ url_for('order_details', order_id=order.id) }}" class="btn btn-primary">
+                            Переглянути деталі
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

@@ -395,6 +395,20 @@ def delete_order(order_id):
     conn.close()
 
 
+def get_orders_by_email(email):
+    """Get all orders for a specific client by email"""
+    conn = get_db_connection()
+    orders = conn.execute('''
+        SELECT o.*, c.name as client_name, c.email as client_email 
+        FROM orders o
+        JOIN clients c ON o.client_id = c.id
+        WHERE c.email = ?
+        ORDER BY o.created_at DESC
+    ''', (email,)).fetchall()
+    conn.close()
+    return orders
+
+
 if __name__ == '__main__':
     # Initialize database
     print("Initializing database...")
