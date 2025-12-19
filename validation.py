@@ -27,6 +27,10 @@ def validate_phone(phone):
         return False
     # Remove spaces and special characters for validation
     clean_phone = re.sub(r'[\s\-\(\)]', '', phone)
+    # Check if + only at the beginning (if present)
+    if '+' in clean_phone:
+        if not clean_phone.startswith('+') or clean_phone.count('+') > 1:
+            return False
     # Accept various Ukrainian phone formats
     return len(clean_phone) >= 10 and clean_phone.replace('+', '').isdigit()
 

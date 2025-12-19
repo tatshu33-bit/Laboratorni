@@ -72,7 +72,7 @@
                 <div class="placeholder-image">
                     <span>{{ product.name }}</span>
                 </div>
-                {% if product.stock < 5 and product.stock > 0 %}
+                {% if product.stock < LOW_STOCK_THRESHOLD and product.stock > 0 %}
                 <span class="stock-badge low-stock">Залишилось мало</span>
                 {% elif product.stock == 0 %}
                 <span class="stock-badge out-of-stock">Немає в наявності</span>

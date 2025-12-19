@@ -25,8 +25,7 @@
         </form>
     </div>
 
-    {% if orders is not none %}
-        {% if orders %}
+    {% if orders %}
         <section class="orders-section">
             <h2>Ваші замовлення</h2>
             <div class="orders-list">
@@ -66,7 +65,10 @@
                 {% endfor %}
             </div>
         </section>
-        {% endif %}
+    {% elif email %}
+    <div class="no-results">
+        <p>Замовлення не знайдено за вказаною email адресою.</p>
+    </div>
     {% endif %}
 </div>
 {% endblock %}

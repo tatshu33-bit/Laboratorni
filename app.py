@@ -17,11 +17,11 @@ app.config['SESSION_COOKIE_SAMESITE'] = os.environ.get('SESSION_COOKIE_SAMESITE'
 
 # Setup logging
 if not app.debug:
-    log_dir = os.path.dirname(os.environ.get('LOG_FILE', 'app.log'))
-    if log_dir and not os.path.exists(log_dir):
+    log_file = os.environ.get('LOG_FILE', 'app.log')
+    log_dir = os.path.dirname(log_file)
+    if log_dir:  # Only create directory if path includes a directory
         os.makedirs(log_dir, exist_ok=True)
     
-    log_file = os.environ.get('LOG_FILE', 'app.log')
     handler = RotatingFileHandler(log_file, maxBytes=10000000, backupCount=3)
     handler.setLevel(getattr(logging, os.environ.get('LOG_LEVEL', 'INFO')))
     formatter = logging.Formatter(
@@ -73,6 +73,17 @@ db.seed_initial_data()
 ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'admin')
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin123')
 
+# Stock configuration
+LOW_STOCK_THRESHOLD = int(os.environ.get('LOW_STOCK_THRESHOLD', '5'))
+
+
+@app.context_processor
+def inject_config():
+    """Inject configuration variables into templates"""
+    return {
+        'LOW_STOCK_THRESHOLD': LOW_STOCK_THRESHOLD
+    }
+
 
 def admin_required(f):
     """Decorator to require admin authentication"""
@@ -112,9 +123,10 @@ def catalog():
     
     # Apply search filter
     if search_query:
+        search_lower = search_query.lower()
         products = [p for p in products if 
-                   search_query.lower() in p['name'].lower() or 
-                   search_query.lower() in p['description'].lower()]
+                   search_lower in p['name'].lower() or 
+                   search_lower in p['description'].lower()]
     
     # Apply category filter
     if category_filter:
@@ -126,9 +138,8 @@ def catalog():
     if max_price is not None:
         products = [p for p in products if p['price'] <= max_price]
     
-    # Get all unique categories for filter dropdown
-    all_products = db.get_all_products()
-    categories = sorted(set(p['category'] for p in all_products))
+    # Get all unique categories for filter dropdown from original products list
+    categories = sorted(set(p['category'] for p in db.get_all_products()))
     
     return render_template('catalog.html', 
                           products=products, 
