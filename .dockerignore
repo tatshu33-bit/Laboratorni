@@ -34,7 +34,6 @@ htmlcov/
 *~
 
 # Documentation
-README.md
 docs/
 *.md
 
@@ -55,3 +54,19 @@ data/
 # OS
 .DS_Store
 Thumbs.db
+
+# Node.js (for resource manager - not needed in Flask container)
+node_modules/
+package.json
+package-lock.json
+server.js
+public/
+
+# Lab documentation files
+LAB*.md
+IMPLEMENTATION_SUMMARY.md
+INTEGRATION_SUMMARY.md
+TEST_REPORT_TEMPLATE.md
+task.md
+*.postman_collection.json
+api_specification.*

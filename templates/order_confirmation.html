@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Замовлення оформлено - Магазин одягу{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="page-header">
+        <div class="success-icon">✓</div>
+        <h1>Дякуємо за замовлення!</h1>
+    </section>
+
+    <div class="confirmation-content">
+        <div class="confirmation-message">
+            <p class="confirmation-text">
+                Ваше замовлення <strong>#{{ order_id }}</strong> успішно оформлено.
+            </p>
+            <p class="confirmation-text">
+                На вашу електронну пошту <strong>{{ client_email }}</strong> надіслано підтвердження з деталями замовлення.
+            </p>
+        </div>
+
+        <div class="order-details">
+            <h2>Деталі замовлення</h2>
+            
+            <div class="order-info">
+                <div class="info-row">
+                    <span class="info-label">Номер замовлення:</span>
+                    <span class="info-value">#{{ order_id }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Дата:</span>
+                    <span class="info-value">{{ order_date }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Статус:</span>
+                    <span class="info-value status-pending">В обробці</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Сума:</span>
+                    <span class="info-value">{{ total }} грн</span>
+                </div>
+            </div>
+
+            <h3>Товари</h3>
+            <div class="order-items">
+                {% for item in order_items %}
+                <div class="order-item">
+                    <div class="order-item-info">
+                        <strong>{{ item.product_name }}</strong>
+                        <span class="order-item-qty">x {{ item.quantity }}</span>
+                    </div>
+                    <div class="order-item-price">
+                        {{ item.price * item.quantity }} грн
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <h3>Контактна інформація</h3>
+            <div class="client-info">
+                <p><strong>Ім'я:</strong> {{ client_name }}</p>
+                <p><strong>Email:</strong> {{ client_email }}</p>
+                <p><strong>Телефон:</strong> {{ client_phone }}</p>
+                <p><strong>Адреса доставки:</strong> {{ client_address }}</p>
+            </div>
+        </div>
+
+        <div class="confirmation-actions">
+            <a href="{{ url_for('index') }}" class="btn btn-primary">
+                Повернутись на головну
+            </a>
+            <a href="{{ url_for('catalog') }}" class="btn btn-secondary">
+                Продовжити покупки
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

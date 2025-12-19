@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resource Manager</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Resource Manager</h1>
+            <p>Manage and organize your learning resources</p>
+        </header>
+
+        <!-- Message container for success/error messages -->
+        <div id="message-container" class="message-container"></div>
+
+        <!-- Form to add new resources -->
+        <section class="form-section">
+            <h2>Add New Resource</h2>
+            <form id="resource-form">
+                <div class="form-group">
+                    <label for="name">Resource Name *</label>
+                    <input type="text" id="name" name="name" placeholder="e.g., React Documentation" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Description *</label>
+                    <textarea id="description" name="description" rows="3" placeholder="Brief description of the resource" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="url">URL *</label>
+                    <input type="url" id="url" name="url" placeholder="https://example.com" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Add Resource</button>
+            </form>
+        </section>
+
+        <!-- Display list of resources -->
+        <section class="resources-section">
+            <h2>Available Resources</h2>
+            <div id="loading" class="loading">Loading resources...</div>
+            <div id="resources-list" class="resources-list"></div>
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
