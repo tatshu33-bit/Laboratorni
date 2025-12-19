@@ -9,9 +9,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code and directories
-COPY app.py database.py ./
-COPY templates ./templates/
-COPY static ./static/
+# Використовуємо COPY . ., щоб копіювати всі файли, включаючи validation.py
+COPY . .
 
 # Create data directory for SQLite database
 RUN mkdir -p /app/data
