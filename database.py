@@ -248,6 +248,30 @@ def get_client_by_id(client_id):
     return client
 
 
+def get_client_by_email(email):
+    """Get a specific client by email"""
+    conn = get_db_connection()
+    client = conn.execute('SELECT * FROM clients WHERE email = ?', (email,)).fetchone()
+    conn.close()
+    return client
+
+
+def get_or_create_client(name, email, phone, address):
+    """
+    Get existing client by email or create a new one.
+    Returns the client_id.
+    """
+    # Check if client exists
+    client = get_client_by_email(email)
+    if client:
+        # Update client information if they exist
+        update_client(client['id'], name, email, phone, address)
+        return client['id']
+    else:
+        # Create new client
+        return create_client(name, email, phone, address)
+
+
 def create_client(name, email, phone, address):
     """Create a new client"""
     conn = get_db_connection()
@@ -299,7 +323,8 @@ def get_order_by_id(order_id):
     """Get a specific order by ID with client information"""
     conn = get_db_connection()
     order = conn.execute('''
-        SELECT o.*, c.name as client_name, c.email as client_email 
+        SELECT o.*, c.name as client_name, c.email as client_email, 
+               c.phone as client_phone, c.address as client_address
         FROM orders o
         LEFT JOIN clients c ON o.client_id = c.id
         WHERE o.id = ?

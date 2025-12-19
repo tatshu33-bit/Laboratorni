@@ -122,6 +122,112 @@ def update_cart(product_id):
     return redirect(url_for('cart'))
 
 
+@app.route('/checkout')
+def checkout():
+    """
+    Сторінка оформлення замовлення.
+    Відображає форму для введення контактної інформації та підсумок замовлення.
+    """
+    cart_items = session.get('cart', [])
+    
+    # Redirect to cart if empty
+    if not cart_items:
+        flash('Ваш кошик порожній', 'error')
+        return redirect(url_for('cart'))
+    
+    # Prepare cart products for display
+    cart_products = []
+    total = 0
+    
+    for item in cart_items:
+        product = db.get_product_by_id(item['id'])
+        if product:
+            cart_product = dict(product)
+            cart_product['quantity'] = item['quantity']
+            cart_product['subtotal'] = product['price'] * item['quantity']
+            cart_products.append(cart_product)
+            total += cart_product['subtotal']
+    
+    return render_template('checkout.html', cart_products=cart_products, total=total)
+
+
+@app.route('/place_order', methods=['POST'])
+def place_order():
+    """
+    Обробка оформлення замовлення.
+    Створює або оновлює клієнта, створює замовлення з товарами,
+    очищає кошик та перенаправляє на сторінку підтвердження.
+    """
+    cart_items = session.get('cart', [])
+    
+    # Validate cart is not empty
+    if not cart_items:
+        flash('Ваш кошик порожній', 'error')
+        return redirect(url_for('cart'))
+    
+    # Get form data
+    name = request.form.get('name', '').strip()
+    email = request.form.get('email', '').strip()
+    phone = request.form.get('phone', '').strip()
+    address = request.form.get('address', '').strip()
+    
+    # Validate required fields
+    if not name or not email or not phone or not address:
+        flash('Будь ласка, заповніть всі обов\'язкові поля', 'error')
+        return redirect(url_for('checkout'))
+    
+    try:
+        # Get or create client
+        client_id = db.get_or_create_client(name, email, phone, address)
+        
+        # Prepare order items
+        order_items = []
+        for item in cart_items:
+            product = db.get_product_by_id(item['id'])
+            if product:
+                # Each item is (product_id, quantity, price)
+                order_items.append((product['id'], item['quantity'], product['price']))
+        
+        # Create order
+        order_id = db.create_order(client_id, order_items)
+        
+        # Clear cart
+        session.pop('cart', None)
+        
+        # Redirect to confirmation page
+        flash('Замовлення успішно оформлено!', 'success')
+        return redirect(url_for('order_confirmation', order_id=order_id))
+        
+    except Exception as e:
+        flash('Помилка при оформленні замовлення. Спробуйте ще раз.', 'error')
+        return redirect(url_for('checkout'))
+
+
+@app.route('/order_confirmation/<int:order_id>')
+def order_confirmation(order_id):
+    """
+    Сторінка підтвердження замовлення.
+    Відображає деталі оформленого замовлення.
+    """
+    order = db.get_order_by_id(order_id)
+    
+    if not order:
+        flash('Замовлення не знайдено', 'error')
+        return redirect(url_for('index'))
+    
+    items = db.get_order_items(order_id)
+    
+    return render_template('order_confirmation.html',
+                         order_id=order_id,
+                         order_date=order['created_at'],
+                         total=order['total_amount'],
+                         order_items=items,
+                         client_name=order['client_name'] if order['client_name'] else 'N/A',
+                         client_email=order['client_email'] if order['client_email'] else 'N/A',
+                         client_phone=order['client_phone'] if order['client_phone'] else 'N/A',
+                         client_address=order['client_address'] if order['client_address'] else 'N/A')
+
+
 @app.route('/reviews')
 def reviews():
     """Сторінка відгуків"""

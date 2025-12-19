@@ -64,9 +64,9 @@
                 <span>До сплати:</span>
                 <span>{{ total }} грн</span>
             </div>
-            <button class="btn btn-primary btn-block" onclick="alert('Функція оформлення замовлення буде доступна незабаром!')">
+            <a href="{{ url_for('checkout') }}" class="btn btn-primary btn-block">
                 Оформити замовлення
-            </button>
+            </a>
             <a href="{{ url_for('catalog') }}" class="btn btn-secondary btn-block">
                 Продовжити покупки
             </a>
