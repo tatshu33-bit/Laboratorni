@@ -2,6 +2,32 @@
 
 A containerized laboratory learning platform with Flask e-commerce application and Node.js resource manager.
 
+## 🌟 New Features (Lab 8)
+
+### Enhanced E-commerce Functionality
+- 🔍 **Product Search & Filtering** - Search by name/description, filter by category and price range
+- 📦 **Order Tracking** - Customers can track orders by email with detailed status timeline
+- 📊 **Stock Indicators** - Visual badges for low stock and out-of-stock items
+- 📋 **Order Details** - Comprehensive order information with status timeline visualization
+- 🔒 **Enhanced Security** - Input validation, XSS protection, comprehensive data sanitization
+- 📱 **Responsive Design** - Mobile-friendly UI with adaptive layouts
+
+### Production Ready
+- ⚙️ **Environment Configuration** - All settings via environment variables
+- 📝 **Logging & Monitoring** - Rotating file logger with configurable levels
+- 🔐 **Security Hardening** - Session security, configurable admin credentials
+- 📚 **Comprehensive Documentation** - User guides, API examples, security guidelines
+
+## 📖 Documentation
+
+- **[USER_GUIDE.md](USER_GUIDE.md)** - Complete user manual
+- **[API_EXAMPLES.md](API_EXAMPLES.md)** - API usage with code examples
+- **[SECURITY.md](SECURITY.md)** - Security best practices
+- **[PRESENTATION.md](PRESENTATION.md)** - Project presentation
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Deployment instructions
+- **[TESTING.md](TESTING.md)** - Testing guide
+- **[PROJECT_COMPLETION_SUMMARY.md](PROJECT_COMPLETION_SUMMARY.md)** - Summary of all changes
+
 ## 🐳 Docker Deployment (Recommended)
 
 The easiest way to run the Flask e-commerce application is using Docker:
@@ -26,16 +52,19 @@ For complete deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md) and [QU
 
 ## Projects Overview
 
-### Lab 4 & 5: E-commerce Web Application with REST API (Python/Flask)
+### Lab 4 & 5 & 8: E-commerce Web Application with REST API (Python/Flask)
 A full-stack web application with SQLite database backend and RESTful API.
 
-**Features:**
-- **E-commerce Store**: Product catalog, shopping cart, checkout
+**Core Features:**
+- **E-commerce Store**: Product catalog with search and filtering, shopping cart, checkout
+- **Order Tracking**: Customers can track orders by email with detailed timeline
 - **Admin Panel**: Full CRUD operations for products, orders, clients, and feedback
 - **Database**: SQLite with proper schema and relationships
 - **REST API**: 10+ RESTful endpoints with Swagger documentation
-- **User Features**: Browse products, submit reviews, place orders
-- **Session Management**: Admin authentication
+- **User Features**: Browse products, submit reviews, place orders, track orders
+- **Session Management**: Admin authentication with configurable credentials
+- **Security**: Input validation, XSS protection, SQL injection prevention
+- **Responsive Design**: Mobile-friendly UI with adaptive layouts
 
 ### Lab 6: Resource Manager (Node.js/Express)
 A simple web application for managing learning resources with a modern interface.
