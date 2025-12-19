@@ -1,0 +1,60 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Управління замовленнями - Адмін{% endblock %}
+
+{% block content %}
+    <h1>Управління замовленнями</h1>
+    
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Клієнт</th>
+                    <th>Email</th>
+                    <th>Сума</th>
+                    <th>Статус</th>
+                    <th>Дата створення</th>
+                    <th>Дії</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if orders %}
+                    {% for order in orders %}
+                    <tr>
+                        <td>{{ order.id }}</td>
+                        <td>{{ order.client_name or 'Гість' }}</td>
+                        <td>{{ order.client_email or '-' }}</td>
+                        <td>{{ "%.2f"|format(order.total_amount) }} грн</td>
+                        <td>
+                            {% if order.status == 'pending' %}
+                                <span style="color: orange;">⏳ В очікуванні</span>
+                            {% elif order.status == 'processing' %}
+                                <span style="color: blue;">🔄 Обробляється</span>
+                            {% elif order.status == 'shipped' %}
+                                <span style="color: purple;">📦 Відправлено</span>
+                            {% elif order.status == 'delivered' %}
+                                <span style="color: green;">✅ Доставлено</span>
+                            {% elif order.status == 'cancelled' %}
+                                <span style="color: red;">❌ Скасовано</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ order.created_at }}</td>
+                        <td class="actions">
+                            <a href="{{ url_for('admin_order_detail', order_id=order.id) }}" class="btn btn-primary btn-sm">Деталі</a>
+                            <form method="POST" action="{{ url_for('admin_delete_order', order_id=order.id) }}" 
+                                  onsubmit="return confirm('Ви впевнені, що хочете видалити це замовлення?');">
+                                <button type="submit" class="btn btn-danger btn-sm">Видалити</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7" style="text-align: center;">Немає замовлень</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

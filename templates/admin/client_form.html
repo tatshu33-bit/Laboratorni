@@ -1,0 +1,36 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}{% if client %}Редагувати клієнта{% else %}Додати клієнта{% endif %} - Адмін{% endblock %}
+
+{% block content %}
+    <h1>{% if client %}Редагувати клієнта{% else %}Додати клієнта{% endif %}</h1>
+    
+    <div class="table-container">
+        <form method="POST">
+            <div class="form-group">
+                <label for="name">Ім'я клієнта *</label>
+                <input type="text" id="name" name="name" value="{{ client.name if client else '' }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" value="{{ client.email if client else '' }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">Телефон</label>
+                <input type="text" id="phone" name="phone" value="{{ client.phone if client else '' }}" placeholder="+380501234567">
+            </div>
+            
+            <div class="form-group">
+                <label for="address">Адреса</label>
+                <textarea id="address" name="address">{{ client.address if client else '' }}</textarea>
+            </div>
+            
+            <div class="actions">
+                <button type="submit" class="btn btn-success">{% if client %}Оновити{% else %}Додати{% endif %}</button>
+                <a href="{{ url_for('admin_clients') }}" class="btn btn-primary">Скасувати</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}
