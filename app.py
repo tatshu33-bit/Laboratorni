@@ -4,6 +4,7 @@ from functools import wraps
 from datetime import datetime
 import database as db
 from flasgger import Swagger, swag_from
+import validation as val
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -220,7 +221,7 @@ def checkout():
 @app.route('/place_order', methods=['POST'])
 def place_order():
     """
-    Обробка оформлення замовлення.
+    Обробка оформлення замовлення з повною валідацією.
     Створює або оновлює клієнта, створює замовлення з товарами,
     очищає кошик та перенаправляє на сторінку підтвердження.
     """
@@ -242,6 +243,32 @@ def place_order():
         flash('Будь ласка, заповніть всі обов\'язкові поля', 'error')
         return redirect(url_for('checkout'))
     
+    # Validate name
+    if not val.validate_name(name):
+        flash('Некоректне ім\'я. Використовуйте тільки літери', 'error')
+        return redirect(url_for('checkout'))
+    
+    # Validate email
+    if not val.validate_email(email):
+        flash('Некоректна email адреса', 'error')
+        return redirect(url_for('checkout'))
+    
+    # Validate phone
+    if not val.validate_phone(phone):
+        flash('Некоректний номер телефону', 'error')
+        return redirect(url_for('checkout'))
+    
+    # Validate address length
+    if not val.validate_text_length(address, min_length=10, max_length=200):
+        flash('Адреса повинна містити від 10 до 200 символів', 'error')
+        return redirect(url_for('checkout'))
+    
+    # Sanitize inputs
+    name = val.sanitize_html(name)
+    email = val.sanitize_html(email)
+    phone = val.sanitize_html(phone)
+    address = val.sanitize_html(address)
+    
     try:
         # Get or create client
         client_id = db.get_or_create_client(name, email, phone, address)
@@ -251,8 +278,16 @@ def place_order():
         for item in cart_items:
             product = db.get_product_by_id(item['id'])
             if product:
+                # Validate quantity
+                if item['quantity'] <= 0:
+                    flash('Некоректна кількість товару', 'error')
+                    return redirect(url_for('checkout'))
                 # Each item is (product_id, quantity, price)
                 order_items.append((product['id'], item['quantity'], product['price']))
+        
+        if not order_items:
+            flash('Немає доступних товарів для замовлення', 'error')
+            return redirect(url_for('cart'))
         
         # Create order
         order_id = db.create_order(client_id, order_items)
@@ -303,19 +338,42 @@ def reviews():
 
 @app.route('/submit_review', methods=['POST'])
 def submit_review():
-    """Додати новий відгук"""
+    """Додати новий відгук з валідацією"""
     author = request.form.get('author', '').strip()
     email = request.form.get('email', '').strip()
     rating = request.form.get('rating', type=int)
     text = request.form.get('text', '').strip()
     
+    # Validate required fields
     if not author or not rating or not text:
         flash('Будь ласка, заповніть всі обов\'язкові поля', 'error')
         return redirect(url_for('reviews'))
     
-    if rating < 1 or rating > 5:
+    # Validate name
+    if not val.validate_name(author):
+        flash('Некоректне ім\'я. Використовуйте тільки літери', 'error')
+        return redirect(url_for('reviews'))
+    
+    # Validate email if provided
+    if email and not val.validate_email(email):
+        flash('Некоректна email адреса', 'error')
+        return redirect(url_for('reviews'))
+    
+    # Validate rating
+    if not val.validate_rating(rating):
         flash('Оцінка повинна бути від 1 до 5', 'error')
         return redirect(url_for('reviews'))
+    
+    # Validate text length
+    if not val.validate_text_length(text, min_length=10, max_length=1000):
+        flash('Текст відгуку повинен містити від 10 до 1000 символів', 'error')
+        return redirect(url_for('reviews'))
+    
+    # Sanitize inputs to prevent XSS
+    author = val.sanitize_html(author)
+    text = val.sanitize_html(text)
+    if email:
+        email = val.sanitize_html(email)
     
     try:
         db.create_feedback(author, email, rating, text)
@@ -340,7 +398,7 @@ def delivery():
 
 @app.route('/track_order', methods=['GET', 'POST'])
 def track_order():
-    """Сторінка відстеження замовлень"""
+    """Сторінка відстеження замовлень з валідацією email"""
     orders = None
     email = None
     
@@ -349,7 +407,11 @@ def track_order():
         
         if not email:
             flash('Будь ласка, введіть email адресу', 'error')
+        elif not val.validate_email(email):
+            flash('Некоректна email адреса', 'error')
         else:
+            # Sanitize email
+            email = val.sanitize_html(email)
             orders = db.get_orders_by_email(email)
             if not orders:
                 flash('Замовлення за цією email адресою не знайдено', 'info')
