@@ -1,29 +1,65 @@
-# Laboratorni REST API
+# Laboratorni - Integrated Web Application & REST API
 
-A comprehensive REST API for managing laboratory items, built with Flask and documented using Swagger/OpenAPI.
+A comprehensive web application with SQLite database backend and RESTful API, combining Lab 4 and Lab 5 implementations.
+
+## Integration Overview
+
+This application integrates:
+- **Lab 4**: Web application with SQLite database, admin panel, and e-commerce features
+- **Lab 5**: RESTful API with Swagger/OpenAPI documentation
+
+Both systems share the same database layer, providing seamless integration between the web interface and API endpoints.
 
 ## Features
 
-- **6+ RESTful Endpoints** for complete CRUD operations
+### Web Application (Lab 4)
+- **E-commerce Store**: Product catalog, shopping cart, checkout
+- **Admin Panel**: Full CRUD operations for products, orders, clients, and feedback
+- **Database**: SQLite with proper schema and relationships
+- **User Features**: Browse products, submit reviews, place orders
+- **Session Management**: Admin authentication
+
+### REST API (Lab 5)
+- **10+ RESTful Endpoints** for complete CRUD operations
 - **JSON Data Exchange** format
 - **Comprehensive Error Handling** (400, 404, 500)
 - **Interactive API Documentation** using Flasgger/Swagger
-- **Postman Collection** for easy testing
+- **Input Validation**: Type checking and range validation
 - **Health Check Endpoint** for monitoring
 
-## API Endpoints
+## Application Endpoints
 
-### System Endpoints
-- `GET /` - Welcome message and API info
+### Web Interface (Templates)
+- `GET /` - Home page with featured products
+- `GET /catalog` - Product catalog
+- `GET /cart` - Shopping cart
+- `GET /reviews` - Customer reviews
+- `GET /admin` - Admin dashboard (requires login)
+- `GET /admin/products` - Manage products
+- `GET /admin/orders` - Manage orders
+- `GET /admin/clients` - Manage clients
+- `GET /admin/feedback` - Manage feedback
+
+### REST API Endpoints
+
+#### System
 - `GET /api/health` - Health check endpoint
 - `GET /api/docs` - Interactive Swagger documentation
 
-### Item Management Endpoints
-- `GET /api/items` - Get all items (supports category filtering)
-- `GET /api/items/<id>` - Get specific item by ID
-- `POST /api/items` - Create a new item
-- `PUT /api/items/<id>` - Update an existing item
-- `DELETE /api/items/<id>` - Delete an item
+#### Products API
+- `GET /api/products` - Get all products (supports category filtering)
+- `GET /api/products/<id>` - Get specific product by ID
+- `POST /api/products` - Create a new product
+- `PUT /api/products/<id>` - Update an existing product
+- `DELETE /api/products/<id>` - Delete a product
+
+#### Feedback API
+- `GET /api/feedback` - Get all feedback/reviews
+- `POST /api/feedback` - Submit new feedback
+
+#### Orders API
+- `GET /api/orders` - Get all orders (supports status filtering)
+- `GET /api/orders/<id>` - Get specific order details with items
 
 ## Setup Instructions
 

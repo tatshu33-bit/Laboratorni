@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Каталог - Магазин одягу{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="page-header">
+        <h1>Каталог товарів</h1>
+        <p>Весь асортимент нашого магазину</p>
+    </section>
+
+    <div class="products-grid">
+        {% for product in products %}
+        <div class="product-card">
+            <div class="product-image">
+                <div class="placeholder-image">
+                    <span>{{ product.name }}</span>
+                </div>
+            </div>
+            <div class="product-info">
+                <h3>{{ product.name }}</h3>
+                <p class="product-category">{{ product.category }}</p>
+                <p class="product-description">{{ product.description }}</p>
+                <div class="product-footer">
+                    <span class="product-price">{{ product.price }} грн</span>
+                    <form method="POST" action="{{ url_for('add_to_cart', product_id=product.id) }}" class="add-to-cart-form">
+                        <button type="submit" class="btn btn-primary">Додати до кошика</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

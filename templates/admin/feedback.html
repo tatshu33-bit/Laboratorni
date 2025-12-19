@@ -1,0 +1,47 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Управління відгуками - Адмін{% endblock %}
+
+{% block content %}
+    <h1>Управління відгуками</h1>
+    
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Автор</th>
+                    <th>Email</th>
+                    <th>Оцінка</th>
+                    <th>Текст</th>
+                    <th>Дата</th>
+                    <th>Дії</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if feedback %}
+                    {% for item in feedback %}
+                    <tr>
+                        <td>{{ item.id }}</td>
+                        <td>{{ item.author }}</td>
+                        <td>{{ item.email or '-' }}</td>
+                        <td>⭐ {{ item.rating }}/5</td>
+                        <td>{{ item.text[:50] }}{% if item.text|length > 50 %}...{% endif %}</td>
+                        <td>{{ item.date }}</td>
+                        <td class="actions">
+                            <form method="POST" action="{{ url_for('admin_delete_feedback', feedback_id=item.id) }}" 
+                                  onsubmit="return confirm('Ви впевнені, що хочете видалити цей відгук?');">
+                                <button type="submit" class="btn btn-danger btn-sm">Видалити</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7" style="text-align: center;">Немає відгуків</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

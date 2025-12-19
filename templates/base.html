@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Магазин одягу{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="container">
+                <div class="nav-brand">
+                    <a href="{{ url_for('index') }}">
+                        <h1>🛍️ Магазин Одягу</h1>
+                    </a>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">Головна</a></li>
+                    <li><a href="{{ url_for('catalog') }}" class="{% if request.endpoint == 'catalog' %}active{% endif %}">Каталог</a></li>
+                    <li><a href="{{ url_for('about') }}" class="{% if request.endpoint == 'about' %}active{% endif %}">Про нас</a></li>
+                    <li><a href="{{ url_for('reviews') }}" class="{% if request.endpoint == 'reviews' %}active{% endif %}">Відгуки</a></li>
+                    <li><a href="{{ url_for('delivery') }}" class="{% if request.endpoint == 'delivery' %}active{% endif %}">Доставка</a></li>
+                    <li><a href="{{ url_for('contacts') }}" class="{% if request.endpoint == 'contacts' %}active{% endif %}">Контакти</a></li>
+                    <li><a href="{{ url_for('cart') }}" class="cart-link {% if request.endpoint == 'cart' %}active{% endif %}">
+                        🛒 Кошик
+                        {% if session.cart %}
+                            <span class="cart-count">{{ session.cart|length }}</span>
+                        {% endif %}
+                    </a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="container">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                            <button class="alert-close" onclick="this.parentElement.remove()">×</button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Про нас</h3>
+                    <p>Магазин якісного одягу для всієї родини</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Контакти</h3>
+                    <p>Email: info@shop.ua</p>
+                    <p>Телефон: +380 (44) 123-45-67</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Графік роботи</h3>
+                    <p>Пн-Пт: 9:00 - 20:00</p>
+                    <p>Сб-Нд: 10:00 - 18:00</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Магазин Одягу. Всі права захищені.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

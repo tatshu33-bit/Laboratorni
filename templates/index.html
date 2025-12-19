@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Головна - Магазин одягу{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1>Ласкаво просимо до нашого магазину!</h1>
+            <p>Якісний одяг для всієї родини за доступними цінами</p>
+            <a href="{{ url_for('catalog') }}" class="btn btn-primary">Переглянути каталог</a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <section class="featured-section">
+        <h2 class="section-title">Рекомендовані товари</h2>
+        <div class="products-grid">
+            {% for product in products %}
+            <div class="product-card">
+                <div class="product-image">
+                    <div class="placeholder-image">
+                        <span>{{ product.name }}</span>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <h3>{{ product.name }}</h3>
+                    <p class="product-category">{{ product.category }}</p>
+                    <p class="product-description">{{ product.description }}</p>
+                    <div class="product-footer">
+                        <span class="product-price">{{ product.price }} грн</span>
+                        <form method="POST" action="{{ url_for('add_to_cart', product_id=product.id) }}" class="add-to-cart-form">
+                            <button type="submit" class="btn btn-primary">Додати до кошика</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="benefits-section">
+        <h2 class="section-title">Чому обирають нас?</h2>
+        <div class="benefits-grid">
+            <div class="benefit-card">
+                <div class="benefit-icon">✓</div>
+                <h3>Якість</h3>
+                <p>Тільки перевірені бренди та якісні матеріали</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">🚚</div>
+                <h3>Швидка доставка</h3>
+                <p>Доставка по всій Україні протягом 1-3 днів</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">💳</div>
+                <h3>Зручна оплата</h3>
+                <p>Оплата при отриманні або онлайн</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">🔄</div>
+                <h3>Обмін та повернення</h3>
+                <p>14 днів на обмін або повернення товару</p>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
