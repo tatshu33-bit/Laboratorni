@@ -2,7 +2,7 @@
 
 A containerized laboratory learning platform with Flask e-commerce application and Node.js resource manager.
 
-## 🌟 New Features (Lab 8)
+## 🌟 New Features (Lab 9)
 
 ### Enhanced E-commerce Functionality
 - 🔍 **Product Search & Filtering** - Search by name/description, filter by category and price range
