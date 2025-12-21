@@ -69,9 +69,13 @@
         {% for product in products %}
         <div class="product-card">
             <div class="product-image">
+                {% if product.image and product.image.startswith('http') %}
+                <img src="{{ product.image }}" alt="{{ product.name }}" class="product-img" loading="lazy">
+                {% else %}
                 <div class="placeholder-image">
                     <span>{{ product.name }}</span>
                 </div>
+                {% endif %}
                 {% if product.stock < LOW_STOCK_THRESHOLD and product.stock > 0 %}
                 <span class="stock-badge low-stock">Залишилось мало</span>
                 {% elif product.stock == 0 %}
