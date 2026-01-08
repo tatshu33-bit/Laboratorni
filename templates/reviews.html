@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Відгуки - Магазин одягу{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="page-header">
+        <h1>Відгуки клієнтів</h1>
+        <p>Що кажуть наші покупці</p>
+    </section>
+
+    <div class="reviews-container">
+        {% for review in reviews %}
+        <div class="review-card">
+            <div class="review-header">
+                <div class="review-author">
+                    <div class="author-avatar">{{ review.author[0] }}</div>
+                    <div class="author-info">
+                        <h3>{{ review.author }}</h3>
+                        <p class="review-date">{{ review.date }}</p>
+                    </div>
+                </div>
+                <div class="review-rating">
+                    {% for i in range(review.rating) %}
+                        <span class="star">⭐</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="review-content">
+                <p>{{ review.text }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <section class="review-form-section">
+        <h2>Залишити відгук</h2>
+        <div class="review-form-container">
+            <form class="review-form" method="POST" action="{{ url_for('submit_review') }}">
+                <div class="form-group">
+                    <label for="review-name">Ваше ім'я *</label>
+                    <input type="text" id="review-name" name="author" required>
+                </div>
+                <div class="form-group">
+                    <label for="review-email">Email</label>
+                    <input type="email" id="review-email" name="email">
+                </div>
+                <div class="form-group">
+                    <label for="review-rating">Оцінка *</label>
+                    <select id="review-rating" name="rating" required>
+                        <option value="">Оберіть оцінку</option>
+                        <option value="5">⭐⭐⭐⭐⭐ Відмінно</option>
+                        <option value="4">⭐⭐⭐⭐ Добре</option>
+                        <option value="3">⭐⭐⭐ Нормально</option>
+                        <option value="2">⭐⭐ Погано</option>
+                        <option value="1">⭐ Дуже погано</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="review-text">Ваш відгук *</label>
+                    <textarea id="review-text" name="text" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Відправити відгук</button>
+            </form>
+        </div>
+    </section>
+</div>
+{% endblock %}
