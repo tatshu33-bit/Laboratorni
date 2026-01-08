@@ -1,0 +1,342 @@
+{
+  "basePath": "/",
+  "definitions": {},
+  "info": {
+    "contact": {
+      "email": "support@laboratorni.com",
+      "name": "API Support"
+    },
+    "description": "A comprehensive REST API for managing laboratory items",
+    "title": "Laboratorni REST API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Welcome message",
+            "schema": {
+              "properties": {
+                "documentation": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        },
+        "summary": "Root endpoint"
+      }
+    },
+    "/api/health": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "API health status",
+            "schema": {
+              "properties": {
+                "status": {
+                  "example": "healthy",
+                  "type": "string"
+                },
+                "timestamp": {
+                  "example": "Fri, 19 Dec 2025 14:58:00 GMT",
+                  "type": "string"
+                },
+                "version": {
+                  "example": "1.0.0",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        },
+        "summary": "Health check endpoint",
+        "tags": [
+          "System"
+        ]
+      }
+    },
+    "/api/items": {
+      "get": {
+        "parameters": [
+          {
+            "description": "Filter items by category",
+            "in": "query",
+            "name": "category",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all items",
+            "schema": {
+              "properties": {
+                "count": {
+                  "example": 3,
+                  "type": "integer"
+                },
+                "items": {
+                  "items": {
+                    "properties": {
+                      "category": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      },
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "quantity": {
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "type": "array"
+                }
+              },
+              "type": "object"
+            }
+          }
+        },
+        "summary": "Get all items",
+        "tags": [
+          "Items"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "category": {
+                  "example": "Glassware",
+                  "type": "string"
+                },
+                "name": {
+                  "example": "Petri Dish",
+                  "type": "string"
+                },
+                "quantity": {
+                  "example": 50,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "name",
+                "category",
+                "quantity"
+              ],
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Item created successfully",
+            "schema": {
+              "properties": {
+                "item": {
+                  "type": "object"
+                },
+                "message": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "Invalid request data",
+            "schema": {
+              "properties": {
+                "error": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          }
+        },
+        "summary": "Create a new item",
+        "tags": [
+          "Items"
+        ]
+      }
+    },
+    "/api/items/{item_id}": {
+      "delete": {
+        "parameters": [
+          {
+            "description": "ID of the item to delete",
+            "in": "path",
+            "name": "item_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item deleted successfully",
+            "schema": {
+              "properties": {
+                "item": {
+                  "type": "object"
+                },
+                "message": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "404": {
+            "description": "Item not found"
+          }
+        },
+        "summary": "Delete an item",
+        "tags": [
+          "Items"
+        ]
+      },
+      "get": {
+        "parameters": [
+          {
+            "description": "ID of the item to retrieve",
+            "in": "path",
+            "name": "item_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item details",
+            "schema": {
+              "properties": {
+                "category": {
+                  "type": "string"
+                },
+                "created_at": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "quantity": {
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "404": {
+            "description": "Item not found",
+            "schema": {
+              "properties": {
+                "error": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          }
+        },
+        "summary": "Get a specific item by ID",
+        "tags": [
+          "Items"
+        ]
+      },
+      "put": {
+        "parameters": [
+          {
+            "description": "ID of the item to update",
+            "in": "path",
+            "name": "item_id",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "properties": {
+                "category": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "quantity": {
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item updated successfully",
+            "schema": {
+              "properties": {
+                "item": {
+                  "type": "object"
+                },
+                "message": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
+          "404": {
+            "description": "Item not found"
+          }
+        },
+        "summary": "Update an existing item",
+        "tags": [
+          "Items"
+        ]
+      }
+    }
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "swagger": "2.0"
+}

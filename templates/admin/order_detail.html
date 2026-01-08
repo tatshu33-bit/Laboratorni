@@ -1,0 +1,97 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Деталі замовлення #{{ order.id }} - Адмін{% endblock %}
+
+{% block content %}
+    <h1>Деталі замовлення #{{ order.id }}</h1>
+    
+    <div class="table-container" style="margin-bottom: 1.5rem;">
+        <h2>Інформація про замовлення</h2>
+        <table>
+            <tr>
+                <th>Клієнт:</th>
+                <td>{{ order.client_name or 'Гість' }}</td>
+            </tr>
+            <tr>
+                <th>Email:</th>
+                <td>{{ order.client_email or '-' }}</td>
+            </tr>
+            <tr>
+                <th>Загальна сума:</th>
+                <td>{{ "%.2f"|format(order.total_amount) }} грн</td>
+            </tr>
+            <tr>
+                <th>Статус:</th>
+                <td>
+                    {% if order.status == 'pending' %}
+                        <span style="color: orange;">⏳ В очікуванні</span>
+                    {% elif order.status == 'processing' %}
+                        <span style="color: blue;">🔄 Обробляється</span>
+                    {% elif order.status == 'shipped' %}
+                        <span style="color: purple;">📦 Відправлено</span>
+                    {% elif order.status == 'delivered' %}
+                        <span style="color: green;">✅ Доставлено</span>
+                    {% elif order.status == 'cancelled' %}
+                        <span style="color: red;">❌ Скасовано</span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>Дата створення:</th>
+                <td>{{ order.created_at }}</td>
+            </tr>
+            <tr>
+                <th>Останнє оновлення:</th>
+                <td>{{ order.updated_at }}</td>
+            </tr>
+        </table>
+        
+        <h3 style="margin-top: 1.5rem;">Змінити статус</h3>
+        <form method="POST" action="{{ url_for('admin_update_order_status', order_id=order.id) }}">
+            <div class="form-group">
+                <select name="status" class="form-control">
+                    <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>В очікуванні</option>
+                    <option value="processing" {% if order.status == 'processing' %}selected{% endif %}>Обробляється</option>
+                    <option value="shipped" {% if order.status == 'shipped' %}selected{% endif %}>Відправлено</option>
+                    <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>Доставлено</option>
+                    <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>Скасовано</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success">Оновити статус</button>
+        </form>
+    </div>
+    
+    <div class="table-container">
+        <h2>Товари в замовленні</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Товар</th>
+                    <th>Кількість</th>
+                    <th>Ціна за одиницю</th>
+                    <th>Сума</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if items %}
+                    {% for item in items %}
+                    <tr>
+                        <td>{{ item.product_name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ "%.2f"|format(item.price) }} грн</td>
+                        <td>{{ "%.2f"|format(item.price * item.quantity) }} грн</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="4" style="text-align: center;">Немає товарів</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+        
+        <div style="margin-top: 1.5rem;">
+            <a href="{{ url_for('admin_orders') }}" class="btn btn-primary">← Назад до списку замовлень</a>
+        </div>
+    </div>
+{% endblock %}
