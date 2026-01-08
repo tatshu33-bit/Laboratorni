@@ -1,0 +1,51 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Управління клієнтами - Адмін{% endblock %}
+
+{% block content %}
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h1>Управління клієнтами</h1>
+        <a href="{{ url_for('admin_add_client') }}" class="btn btn-success">➕ Додати клієнта</a>
+    </div>
+    
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Ім'я</th>
+                    <th>Email</th>
+                    <th>Телефон</th>
+                    <th>Адреса</th>
+                    <th>Дата реєстрації</th>
+                    <th>Дії</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if clients %}
+                    {% for client in clients %}
+                    <tr>
+                        <td>{{ client.id }}</td>
+                        <td>{{ client.name }}</td>
+                        <td>{{ client.email }}</td>
+                        <td>{{ client.phone or '-' }}</td>
+                        <td>{{ client.address or '-' }}</td>
+                        <td>{{ client.created_at }}</td>
+                        <td class="actions">
+                            <a href="{{ url_for('admin_edit_client', client_id=client.id) }}" class="btn btn-primary btn-sm">Редагувати</a>
+                            <form method="POST" action="{{ url_for('admin_delete_client', client_id=client.id) }}" 
+                                  onsubmit="return confirm('Ви впевнені, що хочете видалити цього клієнта?');">
+                                <button type="submit" class="btn btn-danger btn-sm">Видалити</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7" style="text-align: center;">Немає клієнтів</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
