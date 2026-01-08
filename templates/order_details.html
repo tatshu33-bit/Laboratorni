@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Деталі замовлення #{{ order.id }} - Магазин одягу{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="page-header">
+        <h1>Деталі замовлення #{{ order.id }}</h1>
+        <a href="{{ url_for('track_order') }}" class="btn btn-secondary">← Назад до списку</a>
+    </section>
+
+    <div class="order-details-container">
+        <div class="order-summary">
+            <h2>Інформація про замовлення</h2>
+            <div class="info-card">
+                <div class="info-row">
+                    <span class="info-label">Статус:</span>
+                    <span class="order-status status-{{ order.status }}">
+                        {% if order.status == 'pending' %}
+                            Очікується
+                        {% elif order.status == 'processing' %}
+                            Обробляється
+                        {% elif order.status == 'shipped' %}
+                            Відправлено
+                        {% elif order.status == 'delivered' %}
+                            Доставлено
+                        {% elif order.status == 'cancelled' %}
+                            Скасовано
+                        {% else %}
+                            {{ order.status }}
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Дата створення:</span>
+                    <span class="info-value">{{ order.created_at }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Останнє оновлення:</span>
+                    <span class="info-value">{{ order.updated_at }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Загальна сума:</span>
+                    <span class="info-value"><strong>{{ "%.2f"|format(order.total_amount) }} грн</strong></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="client-info">
+            <h2>Інформація про отримувача</h2>
+            <div class="info-card">
+                <p><strong>Ім'я:</strong> {{ order.client_name }}</p>
+                <p><strong>Email:</strong> {{ order.client_email }}</p>
+                <p><strong>Телефон:</strong> {{ order.client_phone }}</p>
+                <p><strong>Адреса доставки:</strong> {{ order.client_address }}</p>
+            </div>
+        </div>
+
+        <div class="order-items-section">
+            <h2>Товари в замовленні</h2>
+            <div class="order-items-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Товар</th>
+                            <th>Ціна</th>
+                            <th>Кількість</th>
+                            <th>Сума</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order_items %}
+                        <tr>
+                            <td>{{ item.product_name }}</td>
+                            <td>{{ "%.2f"|format(item.price) }} грн</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ "%.2f"|format(item.price * item.quantity) }} грн</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3"><strong>Всього:</strong></td>
+                            <td><strong>{{ "%.2f"|format(order.total_amount) }} грн</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div class="order-status-timeline">
+            <h2>Статус замовлення</h2>
+            <div class="timeline">
+                <div class="timeline-item {% if order.status in ['pending', 'processing', 'shipped', 'delivered'] %}completed{% endif %}">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <h3>Замовлення прийнято</h3>
+                        <p>Ваше замовлення успішно оформлено</p>
+                    </div>
+                </div>
+                <div class="timeline-item {% if order.status in ['processing', 'shipped', 'delivered'] %}completed{% endif %}">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <h3>Обробляється</h3>
+                        <p>Ваше замовлення готується до відправки</p>
+                    </div>
+                </div>
+                <div class="timeline-item {% if order.status in ['shipped', 'delivered'] %}completed{% endif %}">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <h3>Відправлено</h3>
+                        <p>Товар відправлено службою доставки</p>
+                    </div>
+                </div>
+                <div class="timeline-item {% if order.status == 'delivered' %}completed{% endif %}">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <h3>Доставлено</h3>
+                        <p>Замовлення успішно доставлено</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Каталог - Магазин одягу{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="page-header">
+        <h1>Каталог товарів</h1>
+        <p>Весь асортимент нашого магазину</p>
+    </section>
+
+    <!-- Search and Filter Section -->
+    <div class="catalog-filters">
+        <form method="GET" action="{{ url_for('catalog') }}" class="filter-form">
+            <div class="filter-row">
+                <div class="filter-item search-box">
+                    <input type="text" 
+                           name="search" 
+                           placeholder="Пошук товарів..." 
+                           value="{{ search_query or '' }}"
+                           class="filter-input">
+                </div>
+                
+                <div class="filter-item">
+                    <select name="category" class="filter-select">
+                        <option value="">Всі категорії</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat }}" {% if category_filter == cat %}selected{% endif %}>
+                            {{ cat }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="filter-item price-filter">
+                    <input type="number" 
+                           name="min_price" 
+                           placeholder="Мін. ціна"
+                           value="{{ min_price or '' }}"
+                           min="0"
+                           step="0.01"
+                           class="filter-input price-input">
+                    <span class="price-separator">—</span>
+                    <input type="number" 
+                           name="max_price" 
+                           placeholder="Макс. ціна"
+                           value="{{ max_price or '' }}"
+                           min="0"
+                           step="0.01"
+                           class="filter-input price-input">
+                </div>
+                
+                <div class="filter-actions">
+                    <button type="submit" class="btn btn-primary">Застосувати</button>
+                    <a href="{{ url_for('catalog') }}" class="btn btn-secondary">Скинути</a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Results Count -->
+    <div class="results-info">
+        <p>Знайдено товарів: <strong>{{ products|length }}</strong></p>
+    </div>
+
+    <!-- Products Grid -->
+    {% if products %}
+    <div class="products-grid">
+        {% for product in products %}
+        <div class="product-card">
+            <div class="product-image">
+                {% if product.image and product.image.startswith('http') %}
+                <img src="{{ product.image }}" alt="{{ product.name }}" class="product-img" loading="lazy">
+                {% else %}
+                <div class="placeholder-image">
+                    <span>{{ product.name }}</span>
+                </div>
+                {% endif %}
+                {% if product.stock < LOW_STOCK_THRESHOLD and product.stock > 0 %}
+                <span class="stock-badge low-stock">Залишилось мало</span>
+                {% elif product.stock == 0 %}
+                <span class="stock-badge out-of-stock">Немає в наявності</span>
+                {% endif %}
+            </div>
+            <div class="product-info">
+                <h3>{{ product.name }}</h3>
+                <p class="product-category">{{ product.category }}</p>
+                <p class="product-description">{{ product.description }}</p>
+                <div class="product-footer">
+                    <span class="product-price">{{ "%.2f"|format(product.price) }} грн</span>
+                    {% if product.stock > 0 %}
+                    <form method="POST" action="{{ url_for('add_to_cart', product_id=product.id) }}" class="add-to-cart-form">
+                        <button type="submit" class="btn btn-primary">Додати до кошика</button>
+                    </form>
+                    {% else %}
+                    <button class="btn btn-disabled" disabled>Немає в наявності</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-results">
+        <p>На жаль, товари не знайдено за вашим запитом.</p>
+        <a href="{{ url_for('catalog') }}" class="btn btn-primary">Показати всі товари</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
