@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Кошик - Магазин одягу{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="page-header">
+        <h1>Кошик покупок</h1>
+    </section>
+
+    {% if cart_products %}
+    <div class="cart-content">
+        <div class="cart-items">
+            {% for product in cart_products %}
+            <div class="cart-item">
+                <div class="cart-item-image">
+                    <div class="placeholder-image-small">
+                        {{ product.name[:1] }}
+                    </div>
+                </div>
+                <div class="cart-item-details">
+                    <h3>{{ product.name }}</h3>
+                    <p class="cart-item-category">{{ product.category }}</p>
+                    <p class="cart-item-price">Ціна: {{ product.price }} грн</p>
+                </div>
+                <div class="cart-item-quantity">
+                    <form method="POST" action="{{ url_for('update_cart', product_id=product.id) }}" class="quantity-form">
+                        <label for="quantity-{{ product.id }}">Кількість:</label>
+                        <input 
+                            type="number" 
+                            id="quantity-{{ product.id }}"
+                            name="quantity" 
+                            value="{{ product.quantity }}" 
+                            min="1" 
+                            max="99"
+                            onchange="this.form.submit()"
+                        >
+                    </form>
+                </div>
+                <div class="cart-item-subtotal">
+                    <p class="subtotal-label">Сума:</p>
+                    <p class="subtotal-amount">{{ product.subtotal }} грн</p>
+                </div>
+                <div class="cart-item-remove">
+                    <form method="POST" action="{{ url_for('remove_from_cart', product_id=product.id) }}">
+                        <button type="submit" class="btn btn-danger btn-small">Видалити</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="cart-summary">
+            <h2>Разом</h2>
+            <div class="summary-row">
+                <span>Товарів:</span>
+                <span>{{ cart_products|length }}</span>
+            </div>
+            <div class="summary-row">
+                <span>Сума:</span>
+                <span>{{ total }} грн</span>
+            </div>
+            <div class="summary-row summary-total">
+                <span>До сплати:</span>
+                <span>{{ total }} грн</span>
+            </div>
+            <button class="btn btn-primary btn-block" onclick="alert('Функція оформлення замовлення буде доступна незабаром!')">
+                Оформити замовлення
+            </button>
+            <a href="{{ url_for('catalog') }}" class="btn btn-secondary btn-block">
+                Продовжити покупки
+            </a>
+        </div>
+    </div>
+    {% else %}
+    <div class="empty-cart">
+        <div class="empty-cart-icon">🛒</div>
+        <h2>Ваш кошик порожній</h2>
+        <p>Додайте товари до кошика, щоб зробити замовлення</p>
+        <a href="{{ url_for('catalog') }}" class="btn btn-primary">Перейти до каталогу</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
